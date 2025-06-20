@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wiki Home</title>
+  <link rel="stylesheet" href="wiki.css" />
+</head>
+<body>
+  <h1>PEAK HANDBOOK DELUXE</h1>
+  <form id="searchForm">
+    <input id="query" placeholder="Search pages..." />
+    <button type="submit">Search</button>
+  </form>
+  <button onclick="location.href='create.html'">➕ Create New Page</button>
+  <ul id="results"></ul>
+
+  <script>
+    async function loadPages() {
+      const res = await fetch('/api/pages');
+      const pages = await res.json();
+      displayResults(pages);
+    }
+
+    function displayResults(pages) {
+      const query = document.getElementById('query').value.toLowerCase();
+      const ul = document.getElementById('results');
+      const filtered = pages.filter(p => p.toLowerCase().includes(query));
+      ul.innerHTML = filtered.length ?
+        filtered.map(p => `<li><a href="/wiki/${encodeURIComponent(p)}">${p}</a></li>`).join('') :
+        '<li>No matches found.</li>';
+    }
+
+    document.getElementById('searchForm').addEventListener('submit', e => {
+      e.preventDefault();
+      loadPages();
+    });
+
+    loadPages();
+  </script>
+</body>
+</html>
